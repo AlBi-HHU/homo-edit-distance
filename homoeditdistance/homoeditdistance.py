@@ -1,4 +1,20 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Homo-Edit Distance
+M Brand, GW Klau, ...
+"""
+__author__ = """Maren Brand, Gunnar W. Klau"""
+__date__ = ""
+__credits__ = ""
+__revision__ = ""
+#    Copyright (C) 2020 by
+#    AlBi-HHU (gunnar.klau@hhu.de)
+#    All rights reserved.
+#    MIT license.
+
 import numpy as np
+import sys, argparse
 
 
 # Main dynamic programming algorithm to compute the homo-edit distance between two strings s and t.
@@ -16,15 +32,15 @@ def homoEditDistance(s, t):
                 d[i][j] = 0
             # main body of method
             else:
-                if i>0 and j>0:
-                    if s[i - 1] == t[j - 1]:
+                if i > 0 and j > 0:
+                    if s[i-1] == t[j-1]:
                         C.append(d[i-1][j-1])
 
                 for k in range (0,i):
-                    C.append(d[k,j]+H[(s, k, i - 1)])
+                    C.append(d[k,j] + H[(s, k, i-1)])
 
                 for l in range (0,j):
-                    C.append(d[i,l]+H[(t, l, j - 1)])
+                    C.append(d[i,l] + H[(t, l, j-1)])
 
                 d[i][j] = int(min(C))
 
@@ -50,22 +66,22 @@ def homoEditDistanceWbacktrack(s, t):
             else:
                 c = float('inf')
                 if i>0 and j>0:
-                    if s[i - 1] == t[j - 1]:
+                    if s[i-1] == t[j-1]:
                         c = d[i-1][j-1]
                         C.append((i-1,j-1))
 
-                for k in range (0,i):
-                    if c > d[k,j]+H[(s, k, i - 1)]:
-                        c = d[k,j]+H[(s, k, i - 1)]
+                for k in range (0, i):
+                    if c > d[k,j] + H[(s, k, i-1)]:
+                        c = d[k,j] + H[(s, k, i-1)]
                         C = list([(k,j)])
-                    elif c == d[k,j]+H[(s, k, i - 1)]:
+                    elif c == d[k,j] + H[(s, k, i-1)]:
                         C.append((k,j))
 
                 for l in range (0,j):
-                    if c > d[i,l]+H[(t, l, j - 1)]:
-                        c = d[i,l]+H[(t, l, j - 1)]
+                    if c > d[i,l] + H[(t, l, j-1)]:
+                        c = d[i,l] + H[(t, l, j-1)]
                         C = list([(i,l)])
-                    elif c == d[i,l]+H[(t, l, j - 1)]:
+                    elif c == d[i,l] + H[(t, l, j-1)]:
                         C.append((i,l))
 
                 d[i][j] = c
@@ -125,25 +141,27 @@ def distancesToEmptyString(s):
     return H
 
 
+## demo:
 
-def main():
-    s = input("Please enter string s: ")
-    t = input("Please enter string t: ")
-    bt = input("If you want to get all subsequences of s and type in \"y\" :")
-    print("The homo-edit-distance for \ts = ",end='')
-    print(s,end='\t')
-    print(" and \tt = ",end='')
-    print(t,end='\t')
-    print(" is: ",end='')
-    if bt == "y":
-        inst = homoEditDistanceWbacktrack(s, t)
-        print(inst[0])
-        for sup in set(inst[1]):
-            print("\n SOLUTION:")
-            print(sup)
+# Parse arguments
+def get_parser():
+    description = 'Given two strings, find their homo-edit distance'
+    parser = argparse.ArgumentParser(description=description, fromfile_prefix_chars='@')
+    # input
+    parser.add_argument('-s', '--string1', required=True, help='first string. Use \"STRING\" for the empty string or strings with special characters')
+    parser.add_argument('-t', '--string2', required=True, help='second string')
+    parser.add_argument('-a', '--all', action="store_true", default=False, required=False, help='show all optimal subsequences')
+    return parser
+
+def run(args):
+    s, t = args.string1, args.string2
+    if not args.all:
+        print("The homo-edit distance between", s, "and", t if t != "" else "the empty string", "is", homoEditDistance(s,t))
     else:
-        print(homoEditDistance(s,t))
+        print("The homo-edit distance between", s, "and", t if t != "" else "the empty string", "is ", end = '')
+        inst = homoEditDistanceWbacktrack(s, t)
+        print(inst[0], "with optimal common subsequences: ", end = '')
+        for sup in set(inst[1]): print(sup, end = ' ')
 
-
-
-main()
+if __name__ == "__main__":
+    run(get_parser().parse_args(sys.argv[1:]))
