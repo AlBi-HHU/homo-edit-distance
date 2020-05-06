@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Homo-Edit Distance
-M Brand, GW Klau, ...
+M Brand, GW Klau, Philipp Spohr
 """
-__author__ = """Maren Brand, Gunnar W. Klau"""
+__author__ = """Maren Brand, Gunnar W. Klau, Philipp Spohr"""
 __date__ = ""
 __credits__ = ""
 __revision__ = ""
@@ -46,7 +46,7 @@ def homoEditDistance(s, t, backtracking = 0):
             # initialisation
             if i == 0 and j == 0:
                 d[i][j] = 0
-                bt[i][j] = list([])
+                if backtracking > 0: bt[i][j] = list([])
             # main body of method
             else:
                 c = float('inf')
@@ -259,11 +259,11 @@ def run(args):
         requiredBacktrackLevel = 2
     elif args.all:
         requiredBacktrackLevel = 1
-    
-    result = homoEditDistance(s,t,requiredBacktrackLevel)
+
+    result = homoEditDistance(s, t, requiredBacktrackLevel)
 
     print('The homo-edit distance between {} and {} is {}\n'.format(
-            s,t if t != "" else "the empty string",result['hed']
+            s,t if t != "" else "the empty string", result['hed']
         )
     )
 
