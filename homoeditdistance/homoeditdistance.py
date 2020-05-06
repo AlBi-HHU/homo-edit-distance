@@ -160,7 +160,7 @@ def resolveDeletions(path,s,t,btz):
             string = s if stepData[1] == 's' else t
             j = int(stepData[3])
             i = int(stepData[2])
-            deletionInstructions = resolveDeletion(string,btz,i,j)#[::-1]
+            deletionInstructions = resolveDeletion(string,btz,i,j-1)#[::-1]
             #print(deletionInstructions)
             if stepData[1] == 's':
                 newPath.append('Deleting substring {} -> {} ({}) from s'.format(i,j,s[i:j]))
@@ -231,6 +231,8 @@ def distancesToEmptyString(s,backtracking = 0):
     ret =  {
         'H' : H,
     }
+
+    print(H)
 
     if backtracking == 2:
         ret['BTMatrix'] = BT
