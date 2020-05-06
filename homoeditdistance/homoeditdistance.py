@@ -39,6 +39,8 @@ def homoEditDistance(s, t, backtracking = 0):
     if backtracking == 2:
         zbt = auxResultS['BTMatrix']
         zbt.update(auxResultT['BTMatrix'])
+        for k in zbt:
+            print(k,zbt[k])
 
     for i in range(0, len(s) + 1):
         for j in range(0, len(t) + 1):
@@ -119,7 +121,6 @@ def backtrackRecursive(bt, s, t, sub, i, j):
 def resolveDeletion(s,btz,i,j):
     if i==j:
         return []
-
     btd = btz[(s,i,j)]
     for k in btd:
         #TODO: Show multiple variants for deletions
@@ -150,24 +151,23 @@ def processDeletions(path,string,deletionInstructions):
         
 #Replaces all deletion events with a step by step backtracking
 def resolveDeletions(path,s,t,btz):
+    print(path)
     newPath = ['s: {} t: {}'.format(s,t)]
     #the state of the strings at a given location in the path is reflected in smod and tmod
-    smod = s
-    tmod = t
     for step in path:
         stepData = step.split(' ')
         if stepData[0] == 'del':
             string = s if stepData[1] == 's' else t
-            i = int(stepData[3])
-            j = int(stepData[2])
+            j = int(stepData[3])
+            i = int(stepData[2])
             deletionInstructions = resolveDeletion(string,btz,i,j)#[::-1]
             #print(deletionInstructions)
             if stepData[1] == 's':
                 newPath.append('Deleting substring {} -> {} ({}) from s'.format(i,j,s[i:j]))
-                smod = processDeletions(newPath,smod,deletionInstructions) 
+                processDeletions(newPath,s,deletionInstructions) 
             else:
-                newPath.append('Deleting substring {} -> {} ({}) from t'.format(i,j,s[i:j]))
-                tmod = processDeletions(newPath,tmod,deletionInstructions)
+                newPath.append('Deleting substring {} -> {} ({}) from t'.format(i,j,t[i:j]))
+                processDeletions(newPath,t,deletionInstructions)
         else:
             pass
 
@@ -191,13 +191,13 @@ def assemblePathsRecursive(bt, s, t, transforms, i, j):
     for C in bt[i][j]:
         # horizontal
         if C[0] == i:
-            for gen in assemblePathsRecursive(bt, s, t, transforms+['del t {} {}'.format(j,C[1])], i, C[1]):
+            for gen in assemblePathsRecursive(bt, s, t, transforms+['del t {} {}'.format(C[1],j)], i, C[1]):
                 yield gen
         
         # vertical
         elif C[1] == j:
 
-            for gen in assemblePathsRecursive(bt, s, t, transforms+['del s {} {}'.format(i,C[0])], C[0], j):
+            for gen in assemblePathsRecursive(bt, s, t, transforms+['del s {} {}'.format(C[0],i)], C[0], j):
                 yield gen
             
         # diagonal
@@ -280,6 +280,6 @@ def run(args):
                 print('Path {} (Possible optimal sequence of operations)\n'.format(idx))
                 for step in path:
                     print(step)       
-
+                print('\n')
 if __name__ == "__main__":
     run(get_parser().parse_args(sys.argv[1:]))
