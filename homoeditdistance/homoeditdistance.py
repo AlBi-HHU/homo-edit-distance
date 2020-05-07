@@ -42,8 +42,8 @@ def homoEditDistance(s, t, backtracking = 0):
         for k in zbt:
             print(k,zbt[k])
 
-    for i in range(0, len(s) + 1):
-        for j in range(0, len(t) + 1):
+    for i in range(0, m + 1):
+        for j in range(0, n + 1):
             C = list([])
             # initialisation
             if i == 0 and j == 0:
@@ -58,17 +58,17 @@ def homoEditDistance(s, t, backtracking = 0):
                         C.append((i-1,j-1))
 
                 for k in range (0, i):
-                    if c > d[k,j] + H[(s, k, i-1)]:
-                        c = d[k,j] + H[(s, k, i-1)]
+                    if c > d[k,j] + H[(s, k, i)]:
+                        c = d[k,j] + H[(s, k, i)]
                         C = list([(k,j)])
-                    elif c == d[k,j] + H[(s, k, i-1)]:
+                    elif c == d[k,j] + H[(s, k, i)]:
                         C.append((k,j))
 
                 for l in range (0,j):
-                    if c > d[i,l] + H[(t, l, j-1)]:
-                        c = d[i,l] + H[(t, l, j-1)]
+                    if c > d[i,l] + H[(t, l, j)]:
+                        c = d[i,l] + H[(t, l, j)]
                         C = list([(i,l)])
-                    elif c == d[i,l] + H[(t, l, j-1)]:
+                    elif c == d[i,l] + H[(t, l, j)]:
                         C.append((i,l))
 
                 d[i][j] = c
@@ -119,15 +119,17 @@ def backtrackRecursive(bt, s, t, sub, i, j):
 
 #Performs backtracking on the auxiliary dynamic programming method to resolve string deletions
 def resolveDeletion(s,btz,i,j):
-    if i==j:
+    if i == j-1:
+        return [(i,j)]
+    elif i > j-1:
         return []
     btd = btz[(s,i,j)]
     for k in btd:
-        #TODO: Show multiple variants for deletions
+    #TODO: Show multiple variants for deletions
         if s[i] == s[j-1]:
-            return [(i,j)]+resolveDeletion(s,btz,i,k)+resolveDeletion(s,btz,k+1,j)
+            return [(i,j)]+resolveDeletion(s,btz,i+1,k)+resolveDeletion(s,btz,k,j-1)
         else:
-            return resolveDeletion(s,btz,i,k)+resolveDeletion(s,btz,k+1,j)
+            return resolveDeletion(s,btz,i,k)+resolveDeletion(s,btz,k,j)
      
 #Applies a list of deletions on a string and outputs human-readable representations of the deletion events
 def processDeletions(path,string,deletionInstructions):
@@ -160,7 +162,8 @@ def resolveDeletions(path,s,t,btz):
             string = s if stepData[1] == 's' else t
             j = int(stepData[3])
             i = int(stepData[2])
-            deletionInstructions = resolveDeletion(string,btz,i,j-1)#[::-1]
+            deletionInstructions = resolveDeletion(string,btz,i,j)#[::-1]
+            print('delIns', deletionInstructions)
             #print(deletionInstructions)
             if stepData[1] == 's':
                 newPath.append('Deleting substring {} -> {} ({}) from s'.format(i,j,s[i:j]))
@@ -196,7 +199,6 @@ def assemblePathsRecursive(bt, s, t, transforms, i, j):
         
         # vertical
         elif C[1] == j:
-
             for gen in assemblePathsRecursive(bt, s, t, transforms+['del s {} {}'.format(C[0],i)], C[0], j):
                 yield gen
             
@@ -214,14 +216,14 @@ def distancesToEmptyString(s,backtracking = 0):
 
     for l in range(0, n):
         for i in range(0,n - l):
-            j = i + l
-            if i == j:
+            j = i + l + 1
+            if i == j-1:
                 H[(s, i, j)] = 1
             else:
                 #C = list([])
                 C = {}                
-                for k in range(i, j):
-                    C[k] = (H[(s, i, k)] + H[(s, k + 1, j)] - int(bool(s[i] == s[j])))
+                for k in range(i+1, j):
+                    C[k] = (H[(s, i, k)] + H[(s, k, j)] - int(bool(s[i] == s[j-1])))
                 H[(s, i, j)] = int(min(C.values()))
                 
                 if backtracking == 2:
@@ -265,7 +267,7 @@ def run(args):
     result = homoEditDistance(s, t, requiredBacktrackLevel)
 
     print('The homo-edit distance between {} and {} is {}\n'.format(
-            s,t if t != "" else "the empty string", result['hed']
+            s if s != "" else "the empty string", t if t != "" else "the empty string", result['hed']
         )
     )
 
