@@ -33,6 +33,8 @@ def homoEditDistance(s, t, backtracking = 0):
     H_t = auxResultT['H']
     H.update(H_t)
     
+    print(H)
+
     #Fetch backtracking if applicable
     zbt = {} if backtracking == 2 else None    
 
@@ -127,29 +129,34 @@ def resolveDeletion(s,btz,i,j):
     for k in btd:
     #TODO: Show multiple variants for deletions
         if s[i] == s[j-1]:
-            return [(i,j)]+resolveDeletion(s,btz,i+1,k)+resolveDeletion(s,btz,k,j-1)
+            return [['merge']+resolveDeletion(s,btz,i,k)+resolveDeletion(s,btz,k,j)]
         else:
-            return resolveDeletion(s,btz,i,k)+resolveDeletion(s,btz,k,j)
+            return [['split']+resolveDeletion(s,btz,i,k)+resolveDeletion(s,btz,k,j)]
      
 #Applies a list of deletions on a string and outputs human-readable representations of the deletion events
 def processDeletions(path,string,deletionInstructions):
-    extension = []
-    tmp = string
-    previousInstruction = None
-    while deletionInstructions:
-        currentInstruction = deletionInstructions.pop()
-        #print(deletionInstructions,currentInstruction)
-        start = currentInstruction[0]
-        end = currentInstruction[1]
-        deletion = tmp[start:end]
-        tmp = tmp[:start]+tmp[end:]
-        extension.append(' Deleting: {} ... \n Result: {}'.format(deletion,tmp))
-        length = end-start
-        for idx,inst in enumerate(deletionInstructions):
-            #check events that overlap
-            if inst[0] <= start and inst[1] >= end:
-                deletionInstructions[idx] = (inst[0],inst[1]-length)
-    path += extension#[::-1]
+    inst = deletionInstructions[0]
+   
+    path += processDeletionsRecursive(string,inst)
+
+def processDeletionsRecursive(string,deletionInstructions):
+
+    if isinstance(deletionInstructions,tuple):
+        return [deletionInstructions]
+
+    deletionType = deletionInstructions[0]
+    left = deletionInstructions[1]
+    right = deletionInstructions[2]
+    if deletionType == 'split':
+        return processDeletionsRecursive(string,left)+processDeletionsRecursive(string,right)
+    elif deletionType == 'merge':
+        lresult = processDeletionsRecursive(string,left)
+        rresult = processDeletionsRecursive(string,right)
+        return lresult[1:]+rresult[:-1]+[(lresult[0][0],rresult[-1][1])]
+    else:
+        print('invalid deletion type: {}'.format(deletionType))
+        sys.exit(-1)
+
         
 #Replaces all deletion events with a step by step backtracking
 def resolveDeletions(path,s,t,btz):
@@ -167,10 +174,10 @@ def resolveDeletions(path,s,t,btz):
             #print(deletionInstructions)
             if stepData[1] == 's':
                 newPath.append('Deleting substring {} -> {} ({}) from s'.format(i,j,s[i:j]))
-                processDeletions(newPath,s,deletionInstructions) 
+                print(processDeletions(newPath,s,deletionInstructions))
             else:
                 newPath.append('Deleting substring {} -> {} ({}) from t'.format(i,j,t[i:j]))
-                processDeletions(newPath,t,deletionInstructions)
+                print(processDeletions(newPath,t,deletionInstructions))
         else:
             pass
 
