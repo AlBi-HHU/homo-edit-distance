@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Homo-Edit Distance
-M Brand, GW Klau, Philipp Spohr
+Maren Brand, Gunnar W. Klau, Philipp Spohr, Nguyen Khoa Tran
 """
-__author__ = """Maren Brand, Gunnar W. Klau, Philipp Spohr"""
+__author__ = """Maren Brand, Gunnar W. Klau, Philipp Spohr, Nguyen Khoa Tran"""
 __date__ = ""
 __credits__ = ""
 __revision__ = ""
@@ -33,14 +33,16 @@ def homoEditDistance(s, t, backtracking = 0):
     H_t = auxResultT['H']
     H.update(H_t)
     
+    #print('H:\n', H)
+
     #Fetch backtracking if applicable
     zbt = {} if backtracking == 2 else None    
 
     if backtracking == 2:
         zbt = auxResultS['BTMatrix']
         zbt.update(auxResultT['BTMatrix'])
-        for k in zbt:
-            print(k,zbt[k])
+        #for k in zbt:
+        #    print(k,zbt[k])
 
     for i in range(0, m + 1):
         for j in range(0, n + 1):
@@ -127,33 +129,38 @@ def resolveDeletion(s,btz,i,j):
     for k in btd:
     #TODO: Show multiple variants for deletions
         if s[i] == s[j-1]:
-            return [(i,j)]+resolveDeletion(s,btz,i+1,k)+resolveDeletion(s,btz,k,j-1)
+            return [['merge']+resolveDeletion(s,btz,i,k)+resolveDeletion(s,btz,k,j)]
         else:
-            return resolveDeletion(s,btz,i,k)+resolveDeletion(s,btz,k,j)
+            return [['split']+resolveDeletion(s,btz,i,k)+resolveDeletion(s,btz,k,j)]
      
 #Applies a list of deletions on a string and outputs human-readable representations of the deletion events
 def processDeletions(path,string,deletionInstructions):
-    extension = []
-    tmp = string
-    previousInstruction = None
-    while deletionInstructions:
-        currentInstruction = deletionInstructions.pop()
-        #print(deletionInstructions,currentInstruction)
-        start = currentInstruction[0]
-        end = currentInstruction[1]
-        deletion = tmp[start:end]
-        tmp = tmp[:start]+tmp[end:]
-        extension.append(' Deleting: {} ... \n Result: {}'.format(deletion,tmp))
-        length = end-start
-        for idx,inst in enumerate(deletionInstructions):
-            #check events that overlap
-            if inst[0] <= start and inst[1] >= end:
-                deletionInstructions[idx] = (inst[0],inst[1]-length)
-    path += extension#[::-1]
+    inst = deletionInstructions[0]
+    
+    path += processDeletionsRecursive(inst)
+
+def processDeletionsRecursive(deletionInstructions):
+
+    if isinstance(deletionInstructions,tuple):
+        return [deletionInstructions]
+
+    deletionType = deletionInstructions[0]
+    left = deletionInstructions[1]
+    right = deletionInstructions[2]
+    if deletionType == 'split':
+        return processDeletionsRecursive(left)+processDeletionsRecursive(right)
+    elif deletionType == 'merge':
+        lresult = processDeletionsRecursive(left)
+        rresult = processDeletionsRecursive(right)
+        return lresult[1:]+rresult[:-1]+[(lresult[0][0],rresult[-1][1])]
+    #else:
+    #    print('invalid deletion type: {}'.format(deletionType))
+    #    sys.exit(-1)
+
         
 #Replaces all deletion events with a step by step backtracking
 def resolveDeletions(path,s,t,btz):
-    print(path)
+    #print(path)
     newPath = ['s: {} t: {}'.format(s,t)]
     #the state of the strings at a given location in the path is reflected in smod and tmod
     for step in path:
@@ -163,11 +170,10 @@ def resolveDeletions(path,s,t,btz):
             j = int(stepData[3])
             i = int(stepData[2])
             deletionInstructions = resolveDeletion(string,btz,i,j)#[::-1]
-            print('delIns', deletionInstructions)
-            #print(deletionInstructions)
+            #print('delIns', deletionInstructions)
             if stepData[1] == 's':
                 newPath.append('Deleting substring {} -> {} ({}) from s'.format(i,j,s[i:j]))
-                processDeletions(newPath,s,deletionInstructions) 
+                processDeletions(newPath,s,deletionInstructions)
             else:
                 newPath.append('Deleting substring {} -> {} ({}) from t'.format(i,j,t[i:j]))
                 processDeletions(newPath,t,deletionInstructions)
@@ -181,13 +187,31 @@ def assemblePaths(bt, s, t,btz):
     transforms = []
     m = len(s)
     n = len(t)
-    for gen in assemblePathsRecursive(bt, s, t, transforms, m, n):
-        yield resolveDeletions(gen,s,t,btz)
-
+    nmMax = max(m, n) + 1
+    for idx, gen in enumerate(assemblePathsRecursive(bt, s, t, transforms, m, n)):
+        path = resolveDeletions(gen,s,t,btz)
+        print('Path {} (Possible optimal sequence of operations)\n'.format(idx))
+        sPrint = s
+        tPrint = t
+        st = ''
+        for step in path:
+            if isinstance(step, tuple):
+                if st == 's':
+                    sDel = sPrint[step[0]:step[1]].replace('-', '')
+                    sPrint = sPrint[:step[0]] + '-'*(step[1]-step[0]) + sPrint[step[1]:]
+                    print('Deleting: ' + sDel + ' '*(nmMax-len(sDel)) + 'Result: ' + sPrint)
+                if st == 't':
+                    tDel = tPrint[step[0]:step[1]].replace('-', '')
+                    tPrint = tPrint[:step[0]] + '-'*(step[1]-step[0]) + tPrint[step[1]:]
+                    print('Deleting: ' + tDel + ' '*(nmMax-len(tDel)) + 'Result: ' + tPrint)
+            else:
+                print(step)
+                if step.startswith('Deleting substring'):
+                    st = step[-1]
+        print('\n')
 
 
 def assemblePathsRecursive(bt, s, t, transforms, i, j):
-    #print(i,j)
     if i == 0 and j == 0:
         yield transforms[::-1]
         return
@@ -228,17 +252,28 @@ def distancesToEmptyString(s,backtracking = 0):
                 
                 if backtracking == 2:
                     minKeys = [k for k in C if C[k] == H[(s,i,j)]]
+                    if s[i] == s[j-1]:
+                        if minKeys[-1] == j-1:
+                            minKeys.pop(-1)
+                        #sameCharBetween = False
+                        #minKeys2 = []
+                        #for mK in minKeys:
+                        #    if s[mK] == s[i]:
+                        #        sameCharBetween = True
+                        #        minKeys2.append(mK)
+                        #if sameCharBetween:
+                        #    minKeys = minKeys2.copy()
                     BT[(s,i,j)] = minKeys
 
     ret =  {
         'H' : H,
     }
 
-    print(H)
+    #print('H:\n', H)
 
     if backtracking == 2:
         ret['BTMatrix'] = BT
-
+    print(ret)
     return ret
 
 
@@ -265,7 +300,6 @@ def run(args):
         requiredBacktrackLevel = 1
 
     result = homoEditDistance(s, t, requiredBacktrackLevel)
-
     print('The homo-edit distance between {} and {} is {}\n'.format(
             s if s != "" else "the empty string", t if t != "" else "the empty string", result['hed']
         )
@@ -278,12 +312,8 @@ def run(args):
         print('\n')#Needed?
 
     if args.backtrace:
-            print('Detailed Backtracking:\n')
-            paths = assemblePaths(result['bt'], s, t,result['zbt'])
-            for idx,path in enumerate(paths):
-                print('Path {} (Possible optimal sequence of operations)\n'.format(idx))
-                for step in path:
-                    print(step)       
-                print('\n')
+        print('Detailed Backtracking:\n')
+        assemblePaths(result['bt'], s, t,result['zbt'])
+        
 if __name__ == "__main__":
     run(get_parser().parse_args(sys.argv[1:]))
