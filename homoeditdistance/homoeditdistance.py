@@ -253,8 +253,17 @@ def distancesToEmptyString(s,backtracking = 0):
                 if backtracking == 2:
                     minKeys = [k for k in C if C[k] == H[(s,i,j)]]
                     if s[i] == s[j-1]:
-                        if minKeys[-1] == j-1:
-                            minKeys.pop(-1)
+                        pass #TODO: Analyze for validity
+
+                        #Khoas old code:
+                        #Removes second backtracking in case there are two for a merger
+                        #Problem: If two characters are merged and there is nothing inbetween, there is only one backtracking pointer that then gets deleted
+
+                        #if minKeys[-1] == j-1:
+                        #    minKeys.pop(-1)
+
+
+
                         #sameCharBetween = False
                         #minKeys2 = []
                         #for mK in minKeys:
