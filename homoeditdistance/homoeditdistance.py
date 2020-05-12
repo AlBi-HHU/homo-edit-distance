@@ -184,13 +184,15 @@ def resolveDeletions(path,s,t,btz):
 
 # returns all possible backtracking paths that resulted in the calculated optimal homo-edit distance
 def assemblePaths(bt, s, t,btz):
+    txt = dict({})
     transforms = []
     m = len(s)
     n = len(t)
     nmMax = max(m, n) + 1
     for idx, gen in enumerate(assemblePathsRecursive(bt, s, t, transforms, m, n)):
+        txtPath = ''
         path = resolveDeletions(gen,s,t,btz)
-        print('Path {} (Possible optimal sequence of operations)\n'.format(idx))
+        txtPath += ('Possible optimal sequence of operations: \n'.format(idx))
         sPrint = s
         tPrint = t
         st = ''
@@ -199,16 +201,22 @@ def assemblePaths(bt, s, t,btz):
                 if st == 's':
                     sDel = sPrint[step[0]:step[1]].replace('-', '')
                     sPrint = sPrint[:step[0]] + '-'*(step[1]-step[0]) + sPrint[step[1]:]
-                    print('Deleting: ' + sDel + ' '*(nmMax-len(sDel)) + 'Result: ' + sPrint)
+                    txtPath += ('Deleting: ' + sDel + ' '*(nmMax-len(sDel)) + 'Result: ' + sPrint + '\n')
                 if st == 't':
                     tDel = tPrint[step[0]:step[1]].replace('-', '')
                     tPrint = tPrint[:step[0]] + '-'*(step[1]-step[0]) + tPrint[step[1]:]
-                    print('Deleting: ' + tDel + ' '*(nmMax-len(tDel)) + 'Result: ' + tPrint)
+                    txtPath += ('Deleting: ' + tDel + ' '*(nmMax-len(tDel)) + 'Result: ' + tPrint + '\n')
             else:
-                print(step)
+                txtPath += (step)
                 if step.startswith('Deleting substring'):
                     st = step[-1]
-        print('\n')
+        txtPath += ('\n')
+        resStr = ''
+        for char in sPrint:
+            if char != '-' and char != ' ':
+                resStr += char
+        txt[resStr] = txtPath
+    return txt
 
 
 def assemblePathsRecursive(bt, s, t, transforms, i, j):
@@ -314,15 +322,27 @@ def run(args):
         )
     )
 
-    if args.all:
+    if args.all and args.backtrace:
+        print('The following optimal subsequences were found, and obtained using the listed operations:\n')
+        subs = backtrack(result['bt'],s,t)
+        txt = dict(assemblePaths(result['bt'], s, t,result['zbt']))
+        for sup in set(subs):
+            print(sup)
+            print(txt[sup])
+        print('\n')#Needed?
+
+    elif args.all:
         print('The following optimal subsequences were found:\n')
         subs = backtrack(result['bt'],s,t)
         for sup in set(subs): print(sup, end = ' ')
         print('\n')#Needed?
 
-    if args.backtrace:
-        print('Detailed Backtracking:\n')
-        assemblePaths(result['bt'], s, t,result['zbt'])
-        
+    elif args.backtrace:
+        print('Detailed Backtracking for one possible subsequence:\n')
+        txt = dict(assemblePaths(result['bt'], s, t,result['zbt']))
+        key = next(iter(txt))
+        print(key)
+        print(txt[key])
+
 if __name__ == "__main__":
     run(get_parser().parse_args(sys.argv[1:]))
