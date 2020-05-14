@@ -177,7 +177,7 @@ def resolveDeletions(path, s, t, btz):
     :return:
     """
     # print(path)
-    newPath = ['s: {} t: {}'.format(s, t)]
+    newPath = ['s: {} t: {}\n'.format(s, t)]
     # the state of the strings at a given location in the path is reflected in smod and tmod
     for step in path:
         stepData = step.split(' ')
@@ -216,7 +216,7 @@ def assemblePaths(bt, s, t, btz):
     for idx, gen in enumerate(assemblePathsRecursive(bt, s, t, transforms, m, n)):
         txtPath = ''
         path = resolveDeletions(gen, s, t, btz)
-        txtPath += ('Possible optimal sequence of operations: \n'.format(idx))
+        txtPath += ('Possible optimal sequence of operations:\n'.format(idx))
         sPrint = s
         tPrint = t
         st = ''
