@@ -38,7 +38,7 @@ def homoEditDistance(s, t, backtracking=0):
         zbt = auxResultS['BTMatrix']
         zbt.update(auxResultT['BTMatrix'])
         # for k in zbt:
-        #     print(k,zbt[k])
+        #     print(k, zbt[k])
 
     for i in range(0, m + 1):
         for j in range(0, n + 1):
@@ -52,9 +52,9 @@ def homoEditDistance(s, t, backtracking=0):
             else:
                 c = float('inf')
                 if i > 0 and j > 0:
-                    if s[i-1] == t[j-1]:
-                        c = d[i-1][j-1]
-                        C.append((i-1, j-1))
+                    if s[i - 1] == t[j - 1]:
+                        c = d[i - 1][j - 1]
+                        C.append((i - 1, j - 1))
 
                 for k in range(0, i):
                     if c > d[k, j] + H[(s, k, i)]:
@@ -125,17 +125,17 @@ def resolveDeletion(s, btz, i, j):
     :param j:
     :return:
     """
-    if i == j-1:
+    if i == j - 1:
         return [(i, j)]
-    elif i > j-1:
+    elif i > j - 1:
         return []
     btd = btz[(s, i, j)]
     for k in btd:
         # TODO: Show multiple variants for deletions
-        if s[i] == s[j-1]:
-            return [['merge']+resolveDeletion(s, btz, i, k)+resolveDeletion(s, btz, k, j)]
+        if s[i] == s[j - 1]:
+            return [['merge'] + resolveDeletion(s, btz, i, k) + resolveDeletion(s, btz, k, j)]
         else:
-            return [['split']+resolveDeletion(s, btz, i, k)+resolveDeletion(s, btz, k, j)]
+            return [['split'] + resolveDeletion(s, btz, i, k) + resolveDeletion(s, btz, k, j)]
 
 
 def processDeletions(path, deletionInstructions):
@@ -157,11 +157,11 @@ def processDeletionsRecursive(deletionInstructions):
     left = deletionInstructions[1]
     right = deletionInstructions[2]
     if deletionType == 'split':
-        return processDeletionsRecursive(left)+processDeletionsRecursive(right)
+        return processDeletionsRecursive(left) + processDeletionsRecursive(right)
     elif deletionType == 'merge':
         lresult = processDeletionsRecursive(left)
         rresult = processDeletionsRecursive(right)
-        return lresult[1:]+rresult[:-1]+[(lresult[0][0], rresult[-1][1])]
+        return lresult[1:] + rresult[:-1] + [(lresult[0][0], rresult[-1][1])]
     # else:
     #     print('invalid deletion type: {}'.format(deletionType))
     #     sys.exit(-1)
@@ -224,12 +224,12 @@ def assemblePaths(bt, s, t, btz):
             if isinstance(step, tuple):
                 if st == 's':
                     sDel = sPrint[step[0]:step[1]].replace('-', '')
-                    sPrint = sPrint[:step[0]] + '-'*(step[1]-step[0]) + sPrint[step[1]:]
-                    txtPath += ('Deleting: ' + sDel + ' '*(nmMax-len(sDel)) + 'Result: ' + sPrint + '\n')
+                    sPrint = sPrint[:step[0]] + '-'*(step[1] - step[0]) + sPrint[step[1]:]
+                    txtPath += ('Deleting: ' + sDel + ' '*(nmMax - len(sDel)) + 'Result: ' + sPrint + '\n')
                 if st == 't':
                     tDel = tPrint[step[0]:step[1]].replace('-', '')
-                    tPrint = tPrint[:step[0]] + '-'*(step[1]-step[0]) + tPrint[step[1]:]
-                    txtPath += ('Deleting: ' + tDel + ' '*(nmMax-len(tDel)) + 'Result: ' + tPrint + '\n')
+                    tPrint = tPrint[:step[0]] + '-'*(step[1] - step[0]) + tPrint[step[1]:]
+                    txtPath += ('Deleting: ' + tDel + ' '*(nmMax - len(tDel)) + 'Result: ' + tPrint + '\n')
             else:
                 txtPath += step
                 if step.startswith('Deleting substring'):
@@ -250,17 +250,17 @@ def assemblePathsRecursive(bt, s, t, transforms, i, j):
     for C in bt[i][j]:
         # horizontal
         if C[0] == i:
-            for gen in assemblePathsRecursive(bt, s, t, transforms+['del t {} {}'.format(C[1], j)], i, C[1]):
+            for gen in assemblePathsRecursive(bt, s, t, transforms + ['del t {} {}'.format(C[1], j)], i, C[1]):
                 yield gen
 
         # vertical
         elif C[1] == j:
-            for gen in assemblePathsRecursive(bt, s, t, transforms+['del s {} {}'.format(C[0], i)], C[0], j):
+            for gen in assemblePathsRecursive(bt, s, t, transforms + ['del s {} {}'.format(C[0], i)], C[0], j):
                 yield gen
 
         # diagonal
         else:
-            for gen in assemblePathsRecursive(bt, s, t, transforms+['match'], C[0], C[1]):
+            for gen in assemblePathsRecursive(bt, s, t, transforms + ['match'], C[0], C[1]):
                 yield gen
 
 
@@ -280,18 +280,18 @@ def distancesToEmptyString(s, backtracking=0):
     for l in range(0, n):
         for i in range(0, n - l):
             j = i + l + 1
-            if i == j-1:
+            if i == j - 1:
                 H[(s, i, j)] = 1
             else:
                 # C = list([])
                 C = {}
-                for k in range(i+1, j):
-                    C[k] = (H[(s, i, k)] + H[(s, k, j)] - int(bool(s[i] == s[j-1])))
+                for k in range(i + 1, j):
+                    C[k] = (H[(s, i, k)] + H[(s, k, j)] - int(bool(s[i] == s[j - 1])))
                 H[(s, i, j)] = int(min(C.values()))
 
                 if backtracking == 2:
                     minKeys = [k for k in C if C[k] == H[(s, i, j)]]
-                    if s[i] == s[j-1]:
+                    if s[i] == s[j - 1]:
                         pass  # TODO: Analyze for validity
 
                         # Khoa's old code:
@@ -299,7 +299,7 @@ def distancesToEmptyString(s, backtracking=0):
                         # Problem: If two characters are merged and there is nothing in between,
                         # there is only one backtracking pointer that then gets deleted
 
-                        # if minKeys[-1] == j-1:
+                        # if minKeys[-1] == j - 1:
                         #     minKeys.pop(-1)
 
                         # sameCharBetween = False
