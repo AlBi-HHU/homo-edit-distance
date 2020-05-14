@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Homo-Edit Distance
@@ -18,10 +18,14 @@ import sys
 import numpy as np
 
 
-# Main dynamic programming algorithm to compute the homo-edit distance between two strings s and t.
-
-# backtracking can be controlled with int argument 0-> none, 1-> basic, 2-> full
 def homoEditDistance(s, t, backtracking=0):
+    """
+    Main dynamic programming algorithm to compute the homo-edit distance between two strings s and t.
+    :param s: string one
+    :param t: string two
+    :param backtracking: 0 -> no backtracking, 1 -> basic backtracking, 2 -> full backtracking
+    :return:
+    """
     m = len(s)
     n = len(t)
     d = np.zeros(shape=(m + 1, n + 1), dtype=object)
@@ -121,8 +125,15 @@ def backtrackRecursive(bt, s, t, sub, i, j):
                 yield gen
 
 
-# Performs backtracking on the auxiliary dynamic programming method to resolve string deletions
 def resolveDeletion(s, btz, i, j):
+    """
+    Performs backtracking on the auxiliary dynamic programming method to resolve string deletions
+    :param s:
+    :param btz:
+    :param i:
+    :param j:
+    :return:
+    """
     if i == j-1:
         return [(i, j)]
     elif i > j-1:
@@ -136,8 +147,12 @@ def resolveDeletion(s, btz, i, j):
             return [['split']+resolveDeletion(s, btz, i, k)+resolveDeletion(s, btz, k, j)]
 
 
-# Applies a list of deletions on a string and outputs human-readable representations of the deletion events
-def processDeletions(path, string, deletionInstructions):
+def processDeletions(path, deletionInstructions):
+    """
+    Applies a list of deletions on a string and outputs human-readable representations of the deletion events
+    :param path:
+    :param deletionInstructions:
+    """
     inst = deletionInstructions[0]
 
     path += processDeletionsRecursive(inst)
@@ -161,8 +176,15 @@ def processDeletionsRecursive(deletionInstructions):
     #     sys.exit(-1)
 
 
-# Replaces all deletion events with a step by step backtracking
 def resolveDeletions(path, s, t, btz):
+    """
+    Replaces all deletion events with a step by step backtracking
+    :param path:
+    :param s:
+    :param t:
+    :param btz:
+    :return:
+    """
     # print(path)
     newPath = ['s: {} t: {}'.format(s, t)]
     # the state of the strings at a given location in the path is reflected in smod and tmod
@@ -176,18 +198,25 @@ def resolveDeletions(path, s, t, btz):
             # print('delIns', deletionInstructions)
             if stepData[1] == 's':
                 newPath.append('Deleting substring {} -> {} ({}) from s'.format(i, j, s[i:j]))
-                processDeletions(newPath, s, deletionInstructions)
+                processDeletions(newPath, deletionInstructions)
             else:
                 newPath.append('Deleting substring {} -> {} ({}) from t'.format(i, j, t[i:j]))
-                processDeletions(newPath, t, deletionInstructions)
+                processDeletions(newPath, deletionInstructions)
         else:
             pass
 
     return newPath
 
 
-# returns all possible backtracking paths that resulted in the calculated optimal homo-edit distance
 def assemblePaths(bt, s, t, btz):
+    """
+    Returns all possible backtracking paths that resulted in the calculated optimal homo-edit distance
+    :param bt:
+    :param s:
+    :param t:
+    :param btz:
+    :return:
+    """
     txt = dict({})
     transforms = []
     m = len(s)
@@ -244,9 +273,14 @@ def assemblePathsRecursive(bt, s, t, transforms, i, j):
                 yield gen
 
 
-# Auxiliary dynamic programming algorithm to compute the homo-edit distance
-# between every substring of a string s and the empty string.
 def distancesToEmptyString(s, backtracking=0):
+    """
+    Auxiliary dynamic programming algorithm to compute the homo-edit distance
+    between every substring of a string s and the empty string.
+    :param s: The string to analyze
+    :param backtracking: optional backtracking mode, see help for function homoEditDistance.
+    :return:
+    """
     n = len(s)
     H = dict({})
 
@@ -303,9 +337,14 @@ def distancesToEmptyString(s, backtracking=0):
 
 # Parse arguments
 def get_parser():
+    """
+    Returns the argument parser used to parse the command line used for invoking the demo application.
+    Used internally, exists solely for readability.
+    :return: The argparser.
+    """
     description = 'Given two strings, find their homo-edit distance'
     parser = argparse.ArgumentParser(description=description, fromfile_prefix_chars='@')
-    # input
+
     parser.add_argument('-s', '--string1', required=True,
                         help='first string. Use \"STRING\" for the empty string or strings with special characters')
     parser.add_argument('-t', '--string2', required=True,
@@ -318,6 +357,10 @@ def get_parser():
 
 
 def run(args):
+    """
+    The main function of the
+    :param args: The arguments provided by the user and pre-parsed by our argument parser.
+    """
     s, t = args.string1, args.string2
 
     requiredBacktrackLevel = 0
