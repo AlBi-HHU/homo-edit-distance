@@ -346,12 +346,12 @@ def get_parser():
     parser = argparse.ArgumentParser(description=description, fromfile_prefix_chars='@')
 
     parser.add_argument('-s', '--string1', required=True,
-                        help='first string. Use \"STRING\" for the empty string or strings with special characters')
+                        help='first string. Use "STRING" for the empty string or strings with special characters')
     parser.add_argument('-t', '--string2', required=True,
                         help='second string')
-    parser.add_argument('-a', '--all', action="store_true", default=False, required=False,
+    parser.add_argument('-a', '--all', action='store_true', default=False, required=False,
                         help='show all optimal subsequences')
-    parser.add_argument('-b', '--backtrace', action="store_true", default=False, required=False,
+    parser.add_argument('-b', '--backtrace', action='store_true', default=False, required=False,
                         help='print transformation steps')
     return parser
 
@@ -371,7 +371,9 @@ def run(args):
 
     result = homoEditDistance(s, t, requiredBacktrackLevel)
     print('The homo-edit distance between {} and {} is {}\n'.format(
-            s if s != "" else "the empty string", t if t != "" else "the empty string", result['hed']
+            s if s != '' else 'the empty string',
+            t if t != '' else 'the empty string',
+            result['hed']
         )
     )
 
@@ -399,5 +401,5 @@ def run(args):
         print(txt[key])
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     run(get_parser().parse_args(sys.argv[1:]))
