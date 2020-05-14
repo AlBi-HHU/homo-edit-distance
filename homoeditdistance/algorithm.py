@@ -286,7 +286,7 @@ def distancesToEmptyString(s, backtracking=0):
                 # C = list([])
                 C = {}
                 for k in range(i + 1, j):
-                    C[k] = (H[(s, i, k)] + H[(s, k, j)] - int(bool(s[i] == s[j - 1])))
+                    C[k] = (H[(s, i, k)] + H[(s, k, j)] - int(s[i] == s[j - 1]))
                 H[(s, i, j)] = int(min(C.values()))
 
                 if backtracking == 2:
