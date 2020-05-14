@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Distutils setup file for homoeditdist
+Distutils setup file for homoeditdistance
 """
 
 import setuptools
@@ -25,6 +25,9 @@ setuptools.setup(
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
     ],
     python_requires='>=3.6',
+    install_requires='numpy',
+    entry_points={'console_scripts': ['homoeditdistance=homoeditdistance.demonstration:main']},
 )
