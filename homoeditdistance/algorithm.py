@@ -74,7 +74,7 @@ def homoEditDistance(s, t, backtracking=0):
                 if backtracking > 0:
                     bt[i][j] = list(C)
     ret = {
-        'hed': d[m][n]
+        'hed': d[m][n],
     }
 
     # Add backtracking matrices to result if needed
@@ -208,7 +208,7 @@ def assemblePaths(bt, s, t, btz):
     :param btz:
     :return:
     """
-    txt = dict({})
+    txt = {}
     transforms = []
     m = len(s)
     n = len(t)
@@ -273,7 +273,7 @@ def distancesToEmptyString(s, backtracking=0):
     :return:
     """
     n = len(s)
-    H = dict({})
+    H = {}
 
     BT = {} if backtracking == 2 else None
 
