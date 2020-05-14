@@ -305,7 +305,7 @@ def distancesToEmptyString(s, backtracking=0):
 
                         # Khoa's old code:
                         # Removes second backtracking in case there are two for a merger
-                        # Problem: If two characters are merged and there is nothing inbetween,
+                        # Problem: If two characters are merged and there is nothing in between,
                         # there is only one backtracking pointer that then gets deleted
 
                         # if minKeys[-1] == j-1:
@@ -340,10 +340,10 @@ def get_parser():
     """
     Returns the argument parser used to parse the command line used for invoking the demo application.
     Used internally, exists solely for readability.
-    :return: The argparser.
+    :return: The ArgumentParser.
     """
-    description = 'Given two strings, find their homo-edit distance'
-    parser = argparse.ArgumentParser(description=description, fromfile_prefix_chars='@')
+    parser = argparse.ArgumentParser(description='Given two strings, find their homo-edit distance',
+                                     fromfile_prefix_chars='@')
 
     parser.add_argument('-s', '--string1', required=True,
                         help='first string. Use "STRING" for the empty string or strings with special characters')
