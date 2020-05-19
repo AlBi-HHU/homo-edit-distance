@@ -188,10 +188,10 @@ def resolveDeletions(path, s, t, btz):
             deletionInstructions = resolveDeletion(string, btz, i, j)  # [::-1]
             # print('delIns', deletionInstructions)
             if stepData[1] == 's':
-                newPath.append('Deleting substring {} -> {} ({}) from s'.format(i, j, s[i:j]))
+                newPath.append('Deleting substring {} -> {} ({}) from s\n'.format(i, j, s[i:j]))
                 processDeletions(newPath, deletionInstructions)
             else:
-                newPath.append('Deleting substring {} -> {} ({}) from t'.format(i, j, t[i:j]))
+                newPath.append('Deleting substring {} -> {} ({}) from t\n'.format(i, j, t[i:j]))
                 processDeletions(newPath, deletionInstructions)
         else:
             pass
@@ -233,8 +233,7 @@ def assemblePaths(bt, s, t, btz):
             else:
                 txtPath += step
                 if step.startswith('Deleting substring'):
-                    st = step[-1]
-        txtPath += '\n'
+                    st = step[-2]
         resStr = ''
         for char in sPrint:
             if char != '-' and char != ' ':
@@ -291,25 +290,6 @@ def distancesToEmptyString(s, backtracking=0):
 
                 if backtracking == 2:
                     minKeys = [k for k in C if C[k] == H[(s, i, j)]]
-                    if s[i] == s[j - 1]:
-                        pass  # TODO: Analyze for validity
-
-                        # Khoa's old code:
-                        # Removes second backtracking in case there are two for a merger
-                        # Problem: If two characters are merged and there is nothing in between,
-                        # there is only one backtracking pointer that then gets deleted
-
-                        # if minKeys[-1] == j - 1:
-                        #     minKeys.pop(-1)
-
-                        # sameCharBetween = False
-                        # minKeys2 = []
-                        # for mK in minKeys:
-                        #     if s[mK] == s[i]:
-                        #         sameCharBetween = True
-                        #         minKeys2.append(mK)
-                        # if sameCharBetween:
-                        #     minKeys = minKeys2.copy()
                     BT[(s, i, j)] = minKeys
 
     ret = {
@@ -320,5 +300,5 @@ def distancesToEmptyString(s, backtracking=0):
 
     if backtracking == 2:
         ret['BTMatrix'] = BT
-    print(ret)
+    #print(ret)
     return ret

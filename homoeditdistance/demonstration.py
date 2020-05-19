@@ -51,23 +51,25 @@ def run(args):
     )
 
     if args.all and args.backtrace:
-        print('The following optimal subsequences were found, and obtained using the listed operations:\n')
+        print('The following optimal subsequences were found, and obtained using the listed operations:')
         subs = backtrack(result['bt'], s, t)
         txt = dict(assemblePaths(result['bt'], s, t, result['zbt']))
         for sup in set(subs):
-            print(sup)
-            print(txt[sup])
-        print('\n')  # Needed?
+            print()
+            if sup == '':
+                print('empty string')
+            else:
+                print(sup)
+            print(txt[sup].strip())
 
     elif args.all:
-        print('The following optimal subsequences were found:\n')
+        print('The following optimal subsequences were found:')
         subs = backtrack(result['bt'], s, t)
         for sup in set(subs):
             print(sup, end=' ')
-        print('\n')  # Needed?
 
     elif args.backtrace:
-        print('Detailed Backtracking for one possible subsequence:\n')
+        print('Detailed Backtracking for one possible subsequence:')
         txt = dict(assemblePaths(result['bt'], s, t, result['zbt']))
         key = next(iter(txt))
         print(key)
