@@ -3,7 +3,7 @@
 
 """
 Homo-Edit Distance
-Maren Brand, Gunnar W. Klau, Philipp Spohr, Nguyen Khoa Tran
+Maren Brand, Gunnar W. Klau, Philipp Spohr, Nguyen Khoa Tran, Max Jakub Ried
 """
 
 import numpy as np
@@ -300,5 +300,5 @@ def distancesToEmptyString(s, backtracking=0):
 
     if backtracking == 2:
         ret['BTMatrix'] = BT
-    #print(ret)
+    # print(ret)
     return ret
