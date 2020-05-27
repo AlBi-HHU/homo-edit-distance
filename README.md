@@ -2,6 +2,14 @@
 
 A homo-insertion is an insertion of a string of equal characters, which we also call a block, into another string. A homo-deletion is the inverse operation, that is, the deletion of such a block. We consider the following problem: Given two strings, what is the minimum number of homo-insertions or homo-deletions needed to convert one into the other? We refer to this number as the homo-edit distance.
 
+## References
+
+The algorithm is described in the following publication:
+
+* M. Brand,  N. K. Tran, P. Spohr, S. Schrinner, G. W. Klau. The
+	homo-edit distance problem. bioRxiv, Cold Spring Harbor
+	Laboratory, DOI: tbd 
+
 ## Installation from Repository
 
 ```sh
