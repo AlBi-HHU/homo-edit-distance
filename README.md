@@ -1,14 +1,14 @@
 # Homo-Edit-Distance
 
+[![DOI](https://zenodo.org/badge/260235161.svg)](https://zenodo.org/badge/latestdoi/260235161)
+
 A homo-insertion is an insertion of a string of equal characters, which we also call a block, into another string. A homo-deletion is the inverse operation, that is, the deletion of such a block. We consider the following problem: Given two strings, what is the minimum number of homo-insertions or homo-deletions needed to convert one into the other? We refer to this number as the homo-edit distance.
 
 ## References
 
 The algorithm is described in the following publication:
 
-* M. Brand,  N. K. Tran, P. Spohr, S. Schrinner, G. W. Klau. The
-	homo-edit distance problem. bioRxiv, Cold Spring Harbor
-	Laboratory, DOI: tbd 
+* M. Brand,  N. K. Tran, P. Spohr, S. Schrinner, G. W. Klau. The homo-edit distance problem. bioRxiv, Cold Spring Harbor Laboratory, DOI: <http://doi.org/10.5281/zenodo.3859404>
 
 ## Installation from Repository
 
@@ -26,7 +26,7 @@ python3 setup.py install
 
 ## How to Run on the Command Line
 
-The Python package comes with a command line tool `hed`, which can be used to run a demonstration of the algorithm. It's source code is located in [demonstration.py](homoeditdistance/demonstration.py). It may also help you to see how to invoke the functions. If you just cloned the repository you can start the demonstration from inside the clone repository using
+The Python package comes with a command line tool `hed`, which can be used to run a demonstration of the algorithm. Its source code is located in [demonstration.py](homoeditdistance/demonstration.py). It may also help you to see how to invoke the functions. If you just cloned the repository you can start the demonstration from inside the cloned repository using
 
 ```sh
 python3 -m homoeditdistance
@@ -87,4 +87,4 @@ print('The homo-edit-distance of {} and {} is {}.'.format(string1, string2, homo
 
 ## How to Run the Unit Tests
 
-Make sure that `unittest` Python package is installed, and run `python3 -m unittest` from inside the clone repository.
+Make sure that `unittest` Python package is installed, and run `python3 -m unittest` from inside the cloned repository.
