@@ -8,7 +8,7 @@ A homo-insertion is an insertion of a string of equal characters, which we also 
 
 The algorithm is described in the following publication:
 
-* M. Brand,  N. K. Tran, P. Spohr, S. Schrinner, G. W. Klau. The homo-edit distance problem. bioRxiv, Cold Spring Harbor Laboratory, DOI: <http://doi.org/10.5281/zenodo.3859404>
+* M. Brand,  N. K. Tran, P. Spohr, S. Schrinner, G. W. Klau. The homo-edit distance problem. bioRxiv, Cold Spring Harbor Laboratory, DOI: tbd
 
 ## Installation from Repository
 
